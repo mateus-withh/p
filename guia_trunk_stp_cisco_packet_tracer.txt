@@ -1,0 +1,98 @@
+
+CONFIGURAÇÃO DE CONEXÃO TRUNK E SPANNING TREE NO CISCO PACKET TRACER
+
+OBJETIVO DO CENÁRIO
+- Dois PCs em VLANs diferentes conectados a switches distintos
+- Switches conectados via trunk
+- STP configurado para evitar loops
+- VLANs criadas e atribuídas corretamente
+
+1. HARDWARE NECESSÁRIO
+
+Adicione os seguintes dispositivos no Cisco Packet Tracer:
+- 2 Switches (modelo 2960)
+- 2 PCs (modelo PC-PT)
+- Cabos de rede (cabo de par trançado)
+
+2. CONEXÕES
+
+Conecte os dispositivos assim:
+
+| Dispositivo A | Porta         | Dispositivo B | Porta         |
+|---------------|---------------|---------------|---------------|
+| PC0           | FastEthernet0 | Switch0       | FastEthernet0/2 |
+| PC1           | FastEthernet0 | Switch1       | FastEthernet0/2 |
+| Switch0       | FastEthernet0/1 | Switch1     | FastEthernet0/1 |
+
+Use cabos cobre direto (par trançado).
+
+3. CONFIGURAÇÃO DOS PCS
+
+No PC0:
+- IP: 192.168.10.10
+- Máscara: 255.255.255.0
+
+No PC1:
+- IP: 192.168.20.10
+- Máscara: 255.255.255.0
+
+4. CONFIGURAÇÃO DOS SWITCHES
+
+Switch0:
+enable
+configure terminal
+
+vlan 10
+name VLAN10
+exit
+
+vlan 20
+name VLAN20
+exit
+
+interface fastEthernet 0/2
+switchport mode access
+switchport access vlan 10
+exit
+
+interface fastEthernet 0/1
+switchport mode trunk
+exit
+
+exit
+write memory
+
+Switch1:
+enable
+configure terminal
+
+vlan 10
+vlan 20
+
+interface fastEthernet 0/2
+switchport mode access
+switchport access vlan 20
+exit
+
+interface fastEthernet 0/1
+switchport mode trunk
+exit
+
+exit
+write memory
+
+5. CONFIGURAÇÃO DO SPANNING TREE (STP)
+
+No Switch0 (como root bridge):
+configure terminal
+spanning-tree vlan 1 root primary
+exit
+
+6. TESTES
+
+- Use "ping" entre os PCs (não vai funcionar pois estão em VLANs diferentes)
+- Use "show vlan brief" para verificar as VLANs
+- Use "show interfaces trunk" para verificar a conexão trunk
+- Use "show spanning-tree" para verificar o STP
+
+Para permitir comunicação entre as VLANs, adicione um roteador com subinterfaces (Router-on-a-Stick).
