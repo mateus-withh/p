@@ -1,0 +1,48 @@
+Link Aggregation (EtherChannel)
+
+EtherChannel é uma tecnologia de agregação de link de porta ou arquitetura port-channel usada principalmente em switches Cisco. Ele permite o agrupamento de vários links Ethernet físicos para criar um link Ethernet lógico com a finalidade de fornecer tolerância a falhas e links de alta velocidade entre switches, roteadores e servidores, podendo ser efetuado em no maximo 8 links.
+
+
+Swicht A (entrar no switch ROOT, é aquele que está com os dois links em verde)
+
+enable
+configure terminal
+interface gigabitEthernet 0/1
+channel-group 1 mode active 
+exit
+
+interface gigabitEthernet 0/2
+channel-group 1 mode active 
+exit
+
+Lembre-se de sempre salvar com o comando: wr
+
+show interfaces etherchannel (para visualizar as configurações aplicadas)
+
+Switch B 
+
+enable
+configure terminal
+interface range gigabitEthernet 0/1-2
+channel-group 1 mode passive
+exit
+
+Lembre-se de sempre salvar com o comando: wr
+
+sh interface etherchannel (para visualizar as configurações aplicadas)
+
+
+Teste Prático: 
+
+Deixe antes de tudo um ping de uma máquina de um Switch para outra máquina que está no outro Switch, logo após isso entre em algum dos dois Switchs e de um shutdown em alguns dos links
+
+enable
+configure terminal
+int gi 0/1
+shutdown
+
+no shutdown (esse comando volta a ligação do link)
+
+repare que o ping não será perdido em momento algum
+
+ping constante digite:  ping -t 192.168.0.20

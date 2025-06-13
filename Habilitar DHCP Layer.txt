@@ -1,0 +1,55 @@
+##################### Habilitar DHCP Layer 3
+
+Cenário: Multilayer Switch (3560-24PS)
+Conectado com dois switches, este switch conectado com um pc cada
+
+
+Colocar o Multilayer Switch- 3560, conectar ele com os switches
+
+enable
+conf terminal
+Ip routing
+Vlan 100
+exit
+Vlan 200
+exit
+
+
+int fa 0/1
+switchport access vlan 100
+ exit
+int fa 0/2
+switchport access vlan 200
+ exit
+
+
+Int vlan 100
+Ip address 10.0.0.1 255.0.0.0
+Exit
+
+Int vlan 200
+Ip address 172.16.0.1 255.255.0.0
+exit
+
+ip dhcp pool senac
+network 10.0.0.0 255.0.0.0
+default-router 10.0.0.1
+Ip dhcp excluded-address 10.0.0.1 10.0.0.10
+
+
+ip dhcp pool fatec
+network 172.16.0.0 255.255.0.0
+default-router 172.16.0.1
+Ip dhcp excluded-address 172.16.0.1 172.16.0.10
+
+
+Salvar e testar nas 2 WorkStation´s
+
+
+Excluir faixa de ip
+enable
+conf terminal
+ip dhcp excluded-address 10.10.10.1 10.10.10.10
+ip dhcp excluded-address 10.10.20.1 10.10.20.10
+ip dhcp excluded-address 10.10.30.1 10.10.30.10
+exit

@@ -1,0 +1,33 @@
+SPANNING TREE
+
+(Aquele quadrado de switche's)
+
+Spanning tree significa 'árvore de espalhamento', e é um conceito (estrutura) da Teoria dos Grafos em que cada nó consegue alcançar todos os outros. O STP faz uso desta árvore para que caminhos eficientes sejam criados.
+
+
+# Habilitar o switch 
+SPANNING TREE
+
+enable 
+configure terminal 
+spanning-tree mode rapid-pvst
+exit
+wr
+ 
+Interface gi 0/1
+shut (derruba o link)
+no shut (habilita o link)
+
+
+Atribuir um IP a uma Vlan:
+enable
+conf terminal
+interface vlan 10
+ip address 10.10.10.1 255.255.255.0
+exit
+
+
+depois na raiz digite para visualizer se os ips foram atribuidos as respectivas Vlan’s:
+show ip interface brief
+
+

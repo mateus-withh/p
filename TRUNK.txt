@@ -1,0 +1,251 @@
+# Crie uma Vlan, adicione uma identificação e uma descrição
+ 
+vlan 2
+name LABORATORIO
+exit
+
+
+# Apagar uma Vlan 
+
+no vlan 2 (2 é o número da vlan que deve ser apagada)
+exit
+
+
+# Renomear uma Vlan 
+
+Enable
+configure terminal
+Vlan 2
+Vlan [ID da vlan] name [novo nome]
+
+# Associar a Vlan criada uma ou mais interfaces do Switch
+
+interface range fastethernet 0/1 – 10
+switchport mode access 
+switchport access vlan 2
+
+
+# Para remover as portas da VLAN, execute o comando no switchport access vlan vlan_number no modo de configuração da interface. Depois que a porta é removida de uma VLAN que não seja a VLAN 1 (a VLAN padrão), essa porta é adicionada automaticamente de volta à VLAN padrão.
+
+enable
+configure terminal
+interface fastethernet 0/2
+no switchport access vlan 2
+
+
+#############################################################################################
+
+
+# TRUNK
+
+
+Criando as VLANS’s
+Nosso primeiro passo será criar as VLAN’s, com o acesso ao equipamento digite os seguintes comandos no switch:
+
+enable
+configure terminal
+vlan 20
+name Vlan-20
+vlan 30
+name Vlan-30
+vlan 40
+name Vlan-40
+
+
+Configurando as portas para respectivas VLANS’s
+Agora precisamos configurar as VLAN’s nas portas que os Desktops serão conectados, digite os seguintes comandos no switch:
+
+enable
+configure terminal
+int fa 0/2
+switchport mode access
+switchport access vlan 20
+int fa 0/3
+switchport mode access
+switchport access vlan 30
+int fa 0/4
+switchport mode access
+switchport access vlan 40
+
+
+Configurando a porta Trunk
+A configuração da porta Trunk, será feita com o objetivo de permitir que na porta 1, trafeguem dados de todas as VLAN’s configuradas. Digite os seguintes comandos no switch:
+
+
+enable
+configure terminal
+interface f0/1
+switchport mode trunk
+switchport trunk allowed vlan 20
+switchport trunk allowed vlan add 30
+switchport trunk allowed vlan add 40
+ 
+Neste comando conseguimos ver a configuração da porta Trunk:
+show interfaces fa0/1 switchport
+
+
+Configuração de um Roteador para interconexão
+Vamos configurar agora o roteador em nossa topologia, com o intuito de rotear os pacotes entre as VLAN’s, para vermos o cenário funcionando e fazermos testes:
+
+
+enable
+configure terminal
+interface g0/0
+no shutdown
+exit
+interface g0/0.20
+encapsulation dot1Q 20
+ip address 10.10.20.1 255.255.255.0
+
+exit
+interface g0/0.30
+encapsulation dot1Q 30
+ip address 10.10.30.1 255.255.255.0
+exit
+interface g0/0.40
+encapsulation dot1Q 40
+ip address 10.10.40.1 255.255.255.0
+exit
+
+
+Configure os Desktops com os seguintes IP’s:
+Desktop VLAN 20
+IP: 10.10.20.10
+Mask: 255.255.255.0
+Gateway: 10.10.20.1
+
+
+Desktop VLAN 30
+IP: 10.10.30.10
+Mask: 255.255.255.0
+Gateway: 10.10.30.1
+
+Desktop VLAN 40
+IP: 10.10.40.10
+Mask: 255.255.255.0
+Gateway: 10.10.40.1
+
+Agora pode testar as conexões com os comandos de Ping entre desktops de VLAN’s diferentes.
+
+
+
+######## OUTRO EXEMPLO DE TRUNK, ESTE SEM ROTEADOR
+
+TOPOLOGIA
+2 switches: Switch-A e Switch-B
+
+3 VLANs:
+
+VLAN 1 → 192.168.0.0/24
+
+VLAN 60 → 192.168.0.0/24
+
+VLAN 2 → 192.168.0.0/24
+
+PCs conectados às portas F0/1, F0/2, F0/3
+
+Trunk entre os switches pelas portas F0/24
+
+🔧 CONFIGURAÇÃO PASSO A PASSO
+📌 1. Criar VLANs em ambos os switches
+Em Switch-A e Switch-B:
+bash
+Copiar
+Editar
+enable
+configure terminal
+
+vlan 1
+ name VLAN1
+exit
+
+vlan 2
+ name VLAN2
+exit
+
+vlan 60
+ name VLAN60
+exit
+📌 2. Configurar as portas de acesso em cada switch
+Switch-A
+bash
+Copiar
+Editar
+interface fastethernet 0/1
+ switchport mode access
+ switchport access vlan 1
+exit
+
+interface fastethernet 0/2
+ switchport mode access
+ switchport access vlan 60
+exit
+
+interface fastethernet 0/3
+ switchport mode access
+ switchport access vlan 2
+exit
+Switch-B
+bash
+Copiar
+Editar
+interface fastethernet 0/1
+ switchport mode access
+ switchport access vlan 1
+exit
+
+interface fastethernet 0/2
+ switchport mode access
+ switchport access vlan 60
+exit
+
+interface fastethernet 0/3
+ switchport mode access
+ switchport access vlan 2
+exit
+📌 3. Configurar a porta de trunk entre os switches
+Em ambos os switches:
+bash
+Copiar
+Editar
+interface fastethernet 0/24
+ switchport mode trunk
+ switchport trunk allowed vlan 1,2,60
+exit
+🖥️ 4. Configurar os IPs dos PCs
+VLAN 1
+PC1 (Switch-A, port 1): IP 192.168.0.10 / Máscara 255.255.255.0
+
+PC2 (Switch-B, port 1): IP 192.168.0.40 / Máscara 255.255.255.0
+
+VLAN 60
+PC3 (Switch-A, port 2): IP 192.168.0.20
+
+PC4 (Switch-B, port 2): IP 192.168.0.50
+
+VLAN 2
+PC5 (Switch-A, port 3): IP 192.168.0.30
+
+PC6 (Switch-B, port 3): IP 192.168.0.60
+
+Deixe o Gateway em branco ou defina depois, caso vá adicionar um roteador para comunicação entre VLANs.
+
+🧪 5. Testar a conectividade
+Faça ping entre os PCs da mesma VLAN mesmo que estejam em switches diferentes.
+
+Ex: 192.168.0.10 ↔ 192.168.0.40 (VLAN 1)
+
+Ex: 192.168.0.20 ↔ 192.168.0.50 (VLAN 60)
+
+Ex: 192.168.0.30 ↔ 192.168.0.60 (VLAN 2)
+
+Não haverá comunicação entre VLANs sem um roteador configurado com roteamento entre VLANs.
+
+
+
+
+
+
+
+
+
